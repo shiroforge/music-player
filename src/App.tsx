@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "./components/ui/button"
 
 const songs = [
@@ -12,7 +13,7 @@ const songs = [
     id: "2",
     title: "Burnig Heart",
     artist: "KEI",
-    coverUrl: "/burning_heart.jpg",
+    coverUrl: "/burningheart.jpg",
     musicUrl: "/burning_heart.mp3"
   },
   {
@@ -40,15 +41,21 @@ const songs = [
 
 function App() {
 
-  let currentSong = songs[0];
+  const [currentSongIndex,setCurrentSongIndex] = useState(0);
+  const currentSong = songs[currentSongIndex];
 
   const handlePrevious = () => {
-    currentSong = songs[4];
+    // 現在の曲の一個前のインデックスを取得 最終的に全体の長さで割ったときの余りを出す。
+    setCurrentSongIndex(
+      (prevIndex) => (prevIndex - 1 + songs.length) % songs.length
+    );
   };
 
   const handleNext = () => {
-    currentSong = songs[1];
-  };
+    setCurrentSongIndex(
+      (prevIndex) => (prevIndex + 1 + songs.length) % songs.length
+    );
+  }
   return (
     <>
       <div>
@@ -69,4 +76,4 @@ function App() {
   );
 }
 
-export default App
+  export default App;
