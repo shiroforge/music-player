@@ -1,5 +1,7 @@
 import { useRef, useState } from "react";
 import { Button } from "./components/ui/button"
+import { Volume2 } from "lucide-react";
+import { Slider } from "./components/ui/slider";
 
 const songs = [
   {
@@ -44,6 +46,7 @@ function App() {
   const [currentSongIndex, setCurrentSongIndex] = useState(0);
   //true 再生中　false 停止中
   const [isPlaying, setIsPlaying] = useState(false);
+  const [volume, setVolume] = useState(50);
   const audioRef = useRef<HTMLAudioElement>(null);
   const currentSong = songs[currentSongIndex];
 
@@ -75,6 +78,15 @@ function App() {
     //反転させる。
     setIsPlaying(!isPlaying);
   };
+
+  const handleVolumeChange = (value: number[]) => {
+    setVolume(value[0]);
+    if (audioRef.current) {
+      //1がmaxのため100で割る。
+      audioRef.current.volume = value[0] / 100; // ボリュームは0から1の範囲で設定
+    }
+
+  }
   return (
     <>
       <div>
@@ -91,7 +103,11 @@ function App() {
           <button onClick={togglePlayPause}>
             {isPlaying ? "一時停止" : "再生"}
           </button>
-            <button onClick={handleNext}>次へ</button>
+          <button onClick={handleNext}>次へ</button>
+          <div>
+            <Volume2 className="h-4 w-4 text-gray-400 mr-2" />
+            <Slider value={[volume]} max={100} min={0} step={1} className="w-full" onValueChange={handleVolumeChange} />
+        </div>
         </div>
         <audio ref={audioRef} src={currentSong.musicUrl} onEnded={handleNext} />
         </div>
