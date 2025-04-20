@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "./components/ui/button"
 
 const songs = [
@@ -41,7 +41,10 @@ const songs = [
 
 function App() {
 
-  const [currentSongIndex,setCurrentSongIndex] = useState(0);
+  const [currentSongIndex, setCurrentSongIndex] = useState(0);
+  //true 再生中　false 停止中
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
   const currentSong = songs[currentSongIndex];
 
   const handlePrevious = () => {
@@ -49,18 +52,34 @@ function App() {
     setCurrentSongIndex(
       (prevIndex) => (prevIndex - 1 + songs.length) % songs.length
     );
+    setIsPlaying(false);
   };
 
   const handleNext = () => {
     setCurrentSongIndex(
       (prevIndex) => (prevIndex + 1 + songs.length) % songs.length
     );
+    setIsPlaying(false);
   }
+
+  const togglePlayPause = () => {
+    if (!audioRef.current) return;
+    //isPlayingはboolean型の変数
+    if (isPlaying) {
+      //再生中の場合停止
+      audioRef.current.pause();
+    } else {
+      //停止中の場合再生
+      audioRef.current.play();
+    }
+    //反転させる。
+    setIsPlaying(!isPlaying);
+  };
   return (
     <>
       <div>
         <div>
-          <img src={currentSong.coverUrl} alt="cover"/>
+          <img src={currentSong.coverUrl} alt="cover" style={{ width: "300px" ,height: "300px"}}/>
         </div>
         <div>
           {/* jsxでは{}の中にJSを入れることができる */}
@@ -68,9 +87,13 @@ function App() {
           <p>{currentSong.artist}</p>
           </div>
           <div>
-            <button onClick={handlePrevious}>戻る</button>
+          <button onClick={handlePrevious}>戻る</button>
+          <button onClick={togglePlayPause}>
+            {isPlaying ? "一時停止" : "再生"}
+          </button>
             <button onClick={handleNext}>次へ</button>
-          </div>
+        </div>
+        <audio ref={audioRef} src={currentSong.musicUrl} onEnded={handleNext} />
         </div>
     </>
   );
